@@ -1,0 +1,41 @@
+{
+  "name": "ajvs",
+  "version": "0.0.1",
+  "description": "An extension for ajv library - writing json-schema faster and simpler",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "jest",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lesslucifer/ajvs.git"
+  },
+  "keywords": [
+    "ajv",
+    "json-schema",
+    "json"
+  ],
+  "author": "VuLQ",
+  "license": "GNU",
+  "bugs": {
+    "url": "https://github.com/lesslucifer/ajvs/issues"
+  },
+  "bundleDependencies": [
+    "ajv"
+  ],
+  "homepage": "https://github.com/lesslucifer/ajvs#readme",
+  "dependencies": {
+    "ajv": "^8.12.0"
+  },
+  "devDependencies": {
+    "@types/ajv": "^1.0.0",
+    "@types/jest": "^28.1.6",
+    "@types/node": "^9.4.7",
+    "bun": "^0.0.12",
+    "jest": "^28.1.3",
+    "ts-jest": "^28.0.7",
+    "typescript": "^4.7.4"
+  }
+}
