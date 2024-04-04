@@ -42,7 +42,7 @@ const AJVS_SUPPORT_SHORT_TYPES = {
 }
 
 const arrayModRegEx = /^\[(\d*)-?(\d*)\]/
-const objectModRegEx = /^{(.*)}/
+const mapModRegEx = /^{(.*)}/
 const minLenRegEx = /^len([\<\>])=([\d]+)$/;
 const patternRegEx = /^p=(.*)$/;
 const limitRegEx = /^([\<\>])(=?)(-?[\d\.]+)$/;
@@ -106,8 +106,8 @@ export class AJVS {
                 hasModifier = true
             }
 
-            if (objectModRegEx.test(sch.name)) {
-                const matches = sch.name.match(objectModRegEx)
+            if (mapModRegEx.test(sch.name)) {
+                const matches = sch.name.match(mapModRegEx)
                 sch.type = AJVNameInferType.MAP
                 sch.name = sch.name.substring(matches[0].length)
                 sch.pattern = matches[1]
@@ -154,17 +154,17 @@ export class AJVS {
             output['nullable'] = true
         }
 
-        if (desc.type === AJVNameInferType.ARRAY) {
+        if (desc.type === AJVNameInferType.ENUM) {
+            output = {
+                'enum': Array.isArray(output) ? output : AjvsUtils.isPlainObject(output) ? Object.values(output) : output
+            }
+        }
+        else if (desc.type === AJVNameInferType.ARRAY) {
             output = {
                 'type': 'array',
                 'items': output,
                 ...(desc.min ? { 'minItems': desc.min } : {}),
                 ...(desc.max ? { 'maxItems': desc.max } : {})
-            }
-        }
-        else if (desc.type === AJVNameInferType.ENUM) {
-            output = {
-                'enum': Array.isArray(output) ? output : AjvsUtils.isPlainObject(output) ? Object.values(output) : output
             }
         }
         else if (desc.type === AJVNameInferType.MAP) {
@@ -205,11 +205,8 @@ export class AJVS {
                 output[keyword] = val;
             }
             else if (patternRegEx.test(mod)) {
-                const matches = mod.match(patternRegEx);
-                const pattern = matches[1];
-
-                mod['pattern'] = pattern + schema.substring(sepIndex + 1);
-                return output // pattern will match all string, no more recursion
+                output['pattern'] = schema.substring(2);
+                return output // pattern will match the rest of the string, no more recursion
             }
         }
         else if (AjvsUtils.eqOrHas(output['type'], 'number') || AjvsUtils.eqOrHas(output['type'], 'integer')) {
@@ -255,15 +252,11 @@ export class AJVS {
             }
         }
 
-        if (required.length > 0) {
-            required = undefined;
-        }
-
         return {
             type: 'object',
             properties: output,
-            required: required,
-            additionalProperties: additionalProperties
+            ...(required.length ? { required } : {}),
+            ...(isUndefined(additionalProperties) ? {}: { additionalProperties: additionalProperties })
         };
     }
 }

@@ -1,6 +1,6 @@
 {
   "name": "ajvs-ts",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "An extension for ajv library - writing json-schema faster and simpler",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

@@ -1,3 +1,5 @@
+import { isUndefined } from "util";
+
 export class AjvsUtils {
     static isPlainObject(value: any) {
         // it's truthy
@@ -13,6 +15,8 @@ export class AjvsUtils {
             value.push(...elems)
             return value
         }
+
+        if (isUndefined(value)) return elems.length > 0 ? elems.length > 1 ? [...elems] : elems[0] : undefined
         
         return [value, ...elems]
     }
