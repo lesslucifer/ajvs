@@ -79,4 +79,15 @@ describe("# Transpile string", () => {
             }
         })
     })
+
+    test('String with desc', async () => {
+        expect(ajv.transpile({
+            '@s': 'string|desc=Sample string',
+        })).toEqual({
+            type: 'object',
+            properties: {
+                's': { 'type': 'string', 'description': 'Sample string' }
+            }
+        })
+    })
 });

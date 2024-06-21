@@ -3,97 +3,74 @@ import { ajvs } from "../lib/ajvs";
 describe("# Transpile number", () => {
     const ajv = ajvs()
 
-    test('Simple array', async () => {
+    test('Simple number', async () => {
         expect(ajv.transpile({
-            '@[]arr': 'number'
+            '@n': 'number'
         })).toEqual({
             type: 'object',
             properties: {
-                'arr': { 'type': 'array', 'items': { 'type': 'number' } }
+                'n': { 'type': 'number' }
             }
         })
     })
 
-    test('Array with min and max items', async () => {
+    test('Number with min', async () => {
         expect(ajv.transpile({
-            '@[1-2]arr': 'number'
+            '@n': 'number|>=0',
+            '@m': 'number|>0',
         })).toEqual({
             type: 'object',
             properties: {
-                'arr': { 
-                    'type': 'array', 
-                    'items': { 'type': 'number' },
-                    'minItems': 1,
-                    'maxItems': 2
-                }
+                'n': { 'type': 'number', 'minimum': 0 },
+                'm': { 'type': 'number', 'exclusiveMinimum': 0 },
             }
         })
     })
 
-    test('Array with min items only', async () => {
+    test('Number with max', async () => {
         expect(ajv.transpile({
-            '@[10]arr': 'number'
+            '@n': 'number|<=0',
+            '@m': 'number|<0',
         })).toEqual({
             type: 'object',
             properties: {
-                'arr': { 
-                    'type': 'array', 
-                    'items': { 'type': 'number' },
-                    'minItems': 10
-                }
+                'n': { 'type': 'number', 'maximum': 0 },
+                'm': { 'type': 'number', 'exclusiveMaximum': 0 },
             }
         })
     })
 
-    test('Array with max items only', async () => {
+    test('Number with both min and max', async () => {
         expect(ajv.transpile({
-            '@[-20]arr': 'number'
+            '@n': 'number|>0',
+            '@m': 'number|<0',
         })).toEqual({
             type: 'object',
             properties: {
-                'arr': { 
-                    'type': 'array', 
-                    'items': { 'type': 'number' },
-                    'maxItems': 20
-                }
+                'n': { 'type': 'number', 'exclusiveMinimum': 0 },
+                'm': { 'type': 'number', 'exclusiveMaximum': 0 },
             }
         })
     })
 
-    test('Array with raw config', async () => {
+    test('Number with multiple of', async () => {
         expect(ajv.transpile({
-            '[1-20]arr': { 'type': 'number' }
+            '@n': 'number|%5'
         })).toEqual({
             type: 'object',
             properties: {
-                'arr': { 
-                    'type': 'array', 
-                    'items': { 'type': 'number' },
-                    'minItems': 1,
-                    'maxItems': 20
-                }
+                'n': { 'type': 'number', 'multipleOf': 5 },
             }
         })
     })
 
-    test('Array with array', async () => {
+    test('Number with desc', async () => {
         expect(ajv.transpile({
-            '[1-20]arr': {
-                'type': 'array',
-                '@items': 'string'
-            }
+            '@n': 'number|desc=An example number'
         })).toEqual({
             type: 'object',
             properties: {
-                'arr': { 
-                    'type': 'array', 
-                    'items': {
-                        'type': 'array',
-                        'items': { 'type': 'string' }
-                    },
-                    'minItems': 1,
-                    'maxItems': 20
-                }
+                'n': { 'type': 'number', 'description': 'An example number' },
             }
         })
     })

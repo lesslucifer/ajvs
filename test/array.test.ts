@@ -1,81 +1,118 @@
 import { ajvs } from "../lib/ajvs";
 
-describe("# Transpile array", () => {
+describe("# Transpile number", () => {
     const ajv = ajvs()
 
-    test('Simple string', async () => {
+    test('Simple array', async () => {
         expect(ajv.transpile({
-            '@s': 'string',
+            '@[]arr': 'number'
         })).toEqual({
             type: 'object',
             properties: {
-                's': { 'type': 'string' }
+                'arr': { 'type': 'array', 'items': { 'type': 'number' } }
             }
         })
     })
 
-    test('String with minLen', async () => {
+    test('Array with min and max items', async () => {
         expect(ajv.transpile({
-            '@s': 'string|len>=62',
+            '@[1-2]arr': 'number'
         })).toEqual({
             type: 'object',
             properties: {
-                's': { 'type': 'string', 'minLength': 62 }
+                'arr': { 
+                    'type': 'array', 
+                    'items': { 'type': 'number' },
+                    'minItems': 1,
+                    'maxItems': 2
+                }
             }
         })
     })
 
-    test('String with maxLen', async () => {
+    test('Array with min items only', async () => {
         expect(ajv.transpile({
-            '@s': 'string|len<=62',
+            '@[10]arr': 'number'
         })).toEqual({
             type: 'object',
             properties: {
-                's': { 'type': 'string', 'maxLength': 62 }
+                'arr': { 
+                    'type': 'array', 
+                    'items': { 'type': 'number' },
+                    'minItems': 10
+                }
             }
         })
     })
 
-    test('String with minLen & maxLen', async () => {
+    test('Array with max items only', async () => {
         expect(ajv.transpile({
-            '@s': 'string|len<=62|len>=10',
+            '@[-20]arr': 'number'
         })).toEqual({
             type: 'object',
             properties: {
-                's': { 'type': 'string', 'minLength': 10, 'maxLength': 62 }
+                'arr': { 
+                    'type': 'array', 
+                    'items': { 'type': 'number' },
+                    'maxItems': 20
+                }
             }
         })
     })
 
-    test('String with pattern', async () => {
+    test('Array with raw config', async () => {
         expect(ajv.transpile({
-            '@s': 'string|p=abc',
+            '[1-20]arr': { 'type': 'number' }
         })).toEqual({
             type: 'object',
             properties: {
-                's': { 'type': 'string', 'pattern': 'abc' }
+                'arr': { 
+                    'type': 'array', 
+                    'items': { 'type': 'number' },
+                    'minItems': 1,
+                    'maxItems': 20
+                }
             }
         })
     })
 
-    test('String with pattern with special charater', async () => {
+    test('Array with array', async () => {
         expect(ajv.transpile({
-            '@s': 'string|p=abc*.^^1',
+            '[1-20]arr': {
+                'type': 'array',
+                '@items': 'string'
+            }
         })).toEqual({
             type: 'object',
             properties: {
-                's': { 'type': 'string', 'pattern': 'abc*.^^1' }
+                'arr': { 
+                    'type': 'array', 
+                    'items': {
+                        'type': 'array',
+                        'items': { 'type': 'string' }
+                    },
+                    'minItems': 1,
+                    'maxItems': 20
+                }
             }
         })
     })
 
-    test('String with pattern with terminator charater', async () => {
+    test('Array with desc', async () => {
         expect(ajv.transpile({
-            '@s': 'string|p=abc*.^^1|12|1||12==1||1=',
+            '@[1-20]arr': 'string|desc=An example string'
         })).toEqual({
             type: 'object',
             properties: {
-                's': { 'type': 'string', 'pattern': 'abc*.^^1|12|1||12==1||1=' }
+                'arr': { 
+                    'type': 'array', 
+                    'items': {
+                        'type': 'string',
+                        'description': 'An example string'
+                    },
+                    'minItems': 1,
+                    'maxItems': 20
+                }
             }
         })
     })

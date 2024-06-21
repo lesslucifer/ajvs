@@ -47,6 +47,7 @@ const minLenRegEx = /^len([\<\>])=([\d]+)$/;
 const patternRegEx = /^p=(.*)$/;
 const limitRegEx = /^([\<\>])(=?)(-?[\d\.]+)$/;
 const multipleOfRegEx = /^\%(-?[\d\.]+)$/;
+const descRegEx = /^desc=(.*)$/;
 
 export class AJVS {
     constructor(public ajv?: AJV) {
@@ -227,6 +228,10 @@ export class AJVS {
         }
         else {
             throw new Error(`Unknown ajvs modifier (${mod})`)
+        }
+
+        if (descRegEx.test(mod)) {
+            output['description'] = mod.match(descRegEx)[1]
         }
 
         return sepIndex >= 0 ? this.buildStringSchema(schema.substring(sepIndex + 1), output) : output
