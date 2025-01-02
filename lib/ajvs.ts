@@ -1,6 +1,5 @@
 import AJV, { JSONSchemaType, Schema, ValidateFunction } from 'ajv'
 import { AjvsUtils } from './utils';
-import { isString, isUndefined } from 'util';
 
 export type AJVSchema<T = any> = Schema | JSONSchemaType<T>
 
@@ -140,7 +139,7 @@ export class AJVS {
     private parseKeyValue<T>(desc: AJVSNameDesc, schema: AJVSchema<T>): AJVSchema<T> {
         let output = schema
         if (desc.applyShortcut) {
-            if (isString(schema)) {
+            if (typeof schema === 'string') {
                 output = this.buildStringSchema(schema, {})
             }
             if (AjvsUtils.isPlainObject(schema)) {
@@ -261,7 +260,7 @@ export class AJVS {
             type: 'object',
             properties: output,
             ...(required.length ? { required } : {}),
-            ...(isUndefined(additionalProperties) ? {}: { additionalProperties: additionalProperties })
+            ...(additionalProperties !== undefined ? { additionalProperties } : {})
         };
     }
 }
